@@ -3,7 +3,7 @@ title: "How does unpadding differ from sequence packing?"
 author: "Sayan Banerjee"
 date: "2025-05-23"
 categories: [efficient-transformers, training-optimization]
-image: "optional-image.jpg"
+image: "modernbert_unpadding.png"
 ---
 
 # Understanding Unpadding and Sequence Packing in Transformer Models: A Q\&A Blog
