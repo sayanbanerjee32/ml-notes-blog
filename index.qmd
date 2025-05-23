@@ -1,5 +1,5 @@
 ---
-title: "ml-blog"
+title: "ml-notes-blog"
 listing:
   contents: posts
   sort: "date desc"
