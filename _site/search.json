@@ -7,11 +7,11 @@
     "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "ml-blog",
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Post With Code",
     "section": "",
-    "text": "Post With Code\n\n\n\nnews\n\ncode\n\nanalysis\n\n\n\n\n\n\n\n\n\nMay 1, 2025\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nApr 28, 2025\n\n\nTristan O’Malley\n\n\n\n\n\nNo matching items"
+    "text": "This is a post with executable code."
   },
   {
     "objectID": "about.html",
@@ -21,10 +21,17 @@
     "text": "About this blog"
   },
   {
-    "objectID": "posts/post-with-code/index.html",
-    "href": "posts/post-with-code/index.html",
-    "title": "Post With Code",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ml-blog",
     "section": "",
-    "text": "This is a post with executable code."
+    "text": "How does unpadding differ from sequence packing?\n\n\n\nefficient-transformers\n\ntraining-optimization\n\n\n\n\n\n\n\n\n\nMay 23, 2025\n\n\nSayan Banerjee\n\n\n\n\n\n\n\n\n\n\n\n\nPost With Code\n\n\n\nnews\n\ncode\n\nanalysis\n\n\n\n\n\n\n\n\n\nMay 1, 2025\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nApr 28, 2025\n\n\nTristan O’Malley\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/unpadding-sequence_packing/index.html",
+    "href": "posts/unpadding-sequence_packing/index.html",
+    "title": "How does unpadding differ from sequence packing?",
+    "section": "",
+    "text": "Understanding Unpadding and Sequence Packing in Transformer Models: A Q&A Blog\nRecently, while reading the ModernBERT blog on Hugging Face, I came across several training optimizations designed to make transformer models faster and more memory-efficient. Among those, two techniques stood out: unpadding and sequence packing.\nInitially, they seemed like two names for the same idea — both aim to reduce padding-related inefficiencies. But on closer inspection, they solve different problems in the data processing pipeline. I realized I needed to really understand the distinction, not only for my current learning but also to help my future self recap this nuance six months from now.\nThis post captures a self-dialogue as I try to understand and differentiate between these two often-confused concepts in transformer model training. The blog is structured as a Q&A, and it’s intended to serve as a reference for my future self, and hopefully for others on a similar learning path.\n\n\n❓Q1: What are unpadding and sequence packing in the context of transformer models?\nBoth techniques aim to improve efficiency by reducing waste caused by padding tokens in batched sequence data.\n\nUnpadding: Removes all [PAD] tokens before feeding data into the transformer, so the model only computes on the actual content. This technique is discussed in detail in the ModernBERT blog.\nSequence Packing: Combines multiple shorter sequences into a single sequence (still within the model’s max length) to minimize or avoid padding altogether. This approach is elaborated upon in the FlashAttention-2 paper.\n\n\n\n\n❓Q2: At first glance, they seem similar. Are they doing the same thing?\nNot quite. Here’s a comparison:\n\n\n\n\n\n\n\n\nFeature\nUnpadding\nSequence Packing\n\n\n\n\nGoal\nAvoid computation on [PAD] tokens\nAvoid having to insert [PAD] tokens in the first place\n\n\nOperates on\nTokens within individual samples\nMultiple samples across a batch\n\n\nResult\nFlat list of real tokens\nFull-length sequences made of multiple original samples\n\n\nNeeds group IDs?\nYes\nYes\n\n\nRequires attention masking?\nYes\nYes\n\n\n\nThese distinctions are crucial for understanding how each technique contributes to model efficiency.\n\n\n\n❓Q3: Can I say that unpadding happens within the transformer?\n⛔ No. Unpadding is applied before the transformer layers. The transformer never sees padding tokens. Unpadding takes a padded batch, removes the [PAD] tokens, and flattens the list while keeping track of which token belongs to which original sequence (via group indices).\n✔️ Rephrased: “The input batch is padded for batching purposes, but unpadding is performed just before the transformer so that it processes only the real (non-padding) tokens.”\nThis process is detailed in the ModernBERT documentation.\n\n\n\n❓Q4: If the model receives a flat list of tokens, what stops one token from attending to another from a different sequence?\nWe use group indices to tag tokens by their original sample. The attention computation is modified so that tokens only attend to others with the same group index. This is typically implemented with block-diagonal attention masks.\n\nThink of it like assigning each token a label saying “I’m from sample X”, and during attention, tokens can only look at their siblings.\n\nThis mechanism is supported in libraries like xFormers and is crucial for maintaining the integrity of individual sequences during processing.\n\n\n\n❓Q5: Wait, if group indices are already used in unpadding to keep samples separate, and the transformer always gets a flat list anyway, what’s the point of sequence packing?\n✅ Great question! Here’s the key:\n\nUnpadding saves compute after the batch is formed. Sequence packing makes the batch itself more efficient by reducing or eliminating padding before unpadding is applied.\n\nLet’s visualize:\n\nWithout packing:\n\nYou may have 18 token slots, but only 10 are real tokens.\nUnpadding trims this to 10 useful tokens.\n\nWith packing:\n\nYou fit 11+ real tokens in the same space by merging short sequences.\nThen you unpad to get those 11+ tokens — a higher yield per batch!\n\n\n✔️ So sequence packing increases token density per batch, making unpadding more effective.\nThis synergy between unpadding and sequence packing is explored in the Enhancing Training Efficiency Using Packing with Flash Attention paper.\n\n\n\n🧠 Analogy\nImagine a delivery truck (your GPU memory):\n\nUnpadding says: “Only carry full boxes, skip the empty ones.”\nSequence packing says: “Make sure every box is full before loading it.”\n\nUse both, and you get full boxes and no empty ones — maximum efficiency.\n\n\n\n✅ TL;DR\n\nUnpadding: Skip padding tokens during computation.\nSequence Packing: Fill each sequence to capacity by merging samples, avoiding padding.\nTogether: More tokens processed per batch, faster training, lower memory use.\n\nThese techniques are integral to modern transformer models like ModernBERT, as detailed in the ModernBERT blog.\n\nThis post is part of my ongoing learning log. If you found it useful or have follow-up questions, feel free to reach out!"
   }
 ]

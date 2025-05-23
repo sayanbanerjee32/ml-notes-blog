@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/unpadding-sequence_packing/index.html",
       "/posts/post-with-code/index.html",
       "/posts/welcome/index.html"
     ]

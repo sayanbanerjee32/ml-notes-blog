@@ -1,0 +1,109 @@
+---
+title: "How does unpadding differ from sequence packing?"
+author: "Sayan Banerjee"
+date: "2025-05-23"
+categories: [efficient-transformers, training-optimization]
+image: "optional-image.jpg"
+---
+
+# Understanding Unpadding and Sequence Packing in Transformer Models: A Q\&A Blog
+
+Recently, while reading the [ModernBERT blog on Hugging Face](https://huggingface.co/blog/modernbert), I came across several training optimizations designed to make transformer models faster and more memory-efficient. Among those, two techniques stood out: **unpadding** and **sequence packing**.
+
+Initially, they seemed like two names for the same idea — both aim to reduce padding-related inefficiencies. But on closer inspection, they solve different problems in the data processing pipeline. I realized I needed to really understand the distinction, not only for my current learning but also to help my future self recap this nuance six months from now.
+
+This post captures a self-dialogue as I try to understand and differentiate between these two often-confused concepts in transformer model training. The blog is structured as a Q\&A, and it's intended to serve as a reference for my future self, and hopefully for others on a similar learning path.
+
+---
+
+### ❓Q1: What are unpadding and sequence packing in the context of transformer models?
+
+Both techniques aim to improve efficiency by reducing waste caused by padding tokens in batched sequence data.
+
+* **Unpadding**: Removes all `[PAD]` tokens before feeding data into the transformer, so the model only computes on the actual content. This technique is discussed in detail in the [ModernBERT blog](https://huggingface.co/blog/modernbert).
+* **Sequence Packing**: Combines multiple shorter sequences into a single sequence (still within the model’s max length) to minimize or avoid padding altogether. This approach is elaborated upon in the [FlashAttention-2 paper](https://arxiv.org/abs/2307.08691).
+
+---
+
+### ❓Q2: At first glance, they seem similar. Are they doing the same thing?
+
+Not quite. Here’s a comparison:
+
+| Feature                     | Unpadding                           | Sequence Packing                                         |
+| --------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| Goal                        | Avoid computation on `[PAD]` tokens | Avoid having to insert `[PAD]` tokens in the first place |
+| Operates on                 | Tokens within individual samples    | Multiple samples across a batch                          |
+| Result                      | Flat list of real tokens            | Full-length sequences made of multiple original samples  |
+| Needs group IDs?            | Yes                                 | Yes                                                      |
+| Requires attention masking? | Yes                                 | Yes                                                      |
+
+These distinctions are crucial for understanding how each technique contributes to model efficiency.
+
+---
+
+### ❓Q3: Can I say that unpadding happens within the transformer?
+
+⛔ No. Unpadding is applied **before** the transformer layers. The transformer **never sees padding tokens**. Unpadding takes a padded batch, removes the `[PAD]` tokens, and flattens the list while keeping track of which token belongs to which original sequence (via group indices).
+
+✔️ Rephrased: "The input batch is padded for batching purposes, but unpadding is performed just before the transformer so that it processes only the real (non-padding) tokens."
+
+This process is detailed in the [ModernBERT documentation](https://huggingface.co/docs/transformers/main/en/model_doc/modernbert).
+
+---
+
+### ❓Q4: If the model receives a flat list of tokens, what stops one token from attending to another from a different sequence?
+
+We use **group indices** to tag tokens by their original sample. The attention computation is modified so that tokens only attend to others with the same group index. This is typically implemented with **block-diagonal attention masks**.
+
+> Think of it like assigning each token a label saying "I'm from sample X", and during attention, tokens can only look at their siblings.
+
+This mechanism is supported in libraries like [xFormers](https://github.com/facebookresearch/xformers) and is crucial for maintaining the integrity of individual sequences during processing.
+
+---
+
+### ❓Q5: Wait, if group indices are already used in unpadding to keep samples separate, and the transformer always gets a flat list anyway, what’s the point of sequence packing?
+
+✅ Great question! Here’s the key:
+
+> **Unpadding saves compute *after* the batch is formed. Sequence packing makes the batch itself more efficient by reducing or eliminating padding *before* unpadding is applied.**
+
+Let’s visualize:
+
+* **Without packing**:
+
+  * You may have 18 token slots, but only 10 are real tokens.
+  * Unpadding trims this to 10 useful tokens.
+
+* **With packing**:
+
+  * You fit 11+ real tokens in the same space by merging short sequences.
+  * Then you unpad to get those 11+ tokens — a higher yield per batch!
+
+✔️ So sequence packing increases **token density per batch**, making **unpadding more effective**.
+
+This synergy between unpadding and sequence packing is explored in the [Enhancing Training Efficiency Using Packing with Flash Attention](https://arxiv.org/abs/2407.09105) paper.
+
+---
+
+### 🧠 Analogy
+
+Imagine a delivery truck (your GPU memory):
+
+* **Unpadding** says: “Only carry full boxes, skip the empty ones.”
+* **Sequence packing** says: “Make sure every box is full before loading it.”
+
+Use both, and you get full boxes *and* no empty ones — maximum efficiency.
+
+---
+
+### ✅ TL;DR
+
+* **Unpadding**: Skip padding tokens during computation.
+* **Sequence Packing**: Fill each sequence to capacity by merging samples, avoiding padding.
+* **Together**: More tokens processed per batch, faster training, lower memory use.
+
+These techniques are integral to modern transformer models like ModernBERT, as detailed in the [ModernBERT blog](https://huggingface.co/blog/modernbert).
+
+---
+
+This post is part of my ongoing learning log. If you found it useful or have follow-up questions, feel free to reach out!
