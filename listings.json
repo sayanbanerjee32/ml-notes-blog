@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/distance-similarity-modern-ml/index.html",
       "/posts/unpadding-sequence_packing/index.html"
     ]
   }

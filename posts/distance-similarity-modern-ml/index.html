@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Sayan Banerjee">
+<meta name="dcterms.date" content="2025-05-30">
 
-<title>ml-notes-blog – ml-blog</title>
+<title>Distance and Similarity in Modern Machine Learning – ml-blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,25 +25,23 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-dfb324f25d9b1687192fa8be62ac8f9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-dfb324f25d9b1687192fa8be62ac8f9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -69,77 +69,19 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">ml-blog</span>
     </a>
   </div>
@@ -150,7 +92,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
@@ -173,106 +115,206 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">ml-notes-blog</h1>
-                      </div>
+    <div class="quarto-title column-body">
+      <h1 class="title">Distance and Similarity in Modern Machine Learning</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">distance-measures</div>
+                <div class="quarto-category">cosine-similarity</div>
+              </div>
+                  </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sayan Banerjee </p>
+            </div>
+    </div>
       
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">May 30, 2025</p>
+      </div>
+    </div>
     
       
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Y29zaW5lLXNpbWlsYXJpdHk=">cosine-similarity <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZGlzdGFuY2UtbWVhc3VyZXM=">distance-measures <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZWZmaWNpZW50LXRyYW5zZm9ybWVycw==">efficient-transformers <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dHJhaW5pbmctb3B0aW1pemF0aW9u">training-optimization <span class="quarto-category-count">(1)</span></div></div></div>
+    
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<section id="distance-and-similarity-in-modern-machine-learning-a-qa-blog" class="level1">
+<h1>Distance and Similarity in Modern Machine Learning: A Q&amp;A Blog</h1>
+<hr>
+<section id="q1-what-are-some-common-distance-measures-used-in-machine-learning" class="level2">
+<h2 class="anchored" data-anchor-id="q1-what-are-some-common-distance-measures-used-in-machine-learning">Q1: What are some common distance measures used in machine learning?</h2>
+<p><strong>A:</strong></p>
+<ul>
+<li><strong>Euclidean Distance</strong>: The straight-line distance between two points in Euclidean space.&nbsp;Used in K-Nearest Neighbours (KNN), K-Means clustering, and principal component analysis (PCA) for tasks involving continuous, low- to medium-dimensional data (e.g., iris flower dataset, image similarity with pixel values).</li>
+<li><strong>Manhattan Distance</strong>: The sum of absolute differences between coordinates. Useful in high-dimensional data or grid-like problems (e.g., recommender systems, Manhattan-style city maps, or when features are independent).</li>
+<li><strong>Minkowski Distance</strong>: A generalization that includes both Euclidean (p=2) and Manhattan (p=1) as special cases.&nbsp;Allows flexibility to choose the best metric for a dataset, especially in KNN classifiers by tuning the ‘p’ parameter.</li>
+<li><strong>Cosine Similarity</strong>: Measures the cosine of the angle between two vectors. Widely used in text mining and NLP (e.g., document similarity, search engines, sentence embeddings in BERT or CLIP, retrieval in RAG systems), where the magnitude of the vectors is less meaningful than direction.</li>
+<li><strong>Hamming Distance</strong>: Counts differing positions between strings. Used in error detection/correction (e.g., checksums in data transmission, genetic sequence comparison, and clustering categorical/binary attributes).</li>
+<li><strong>Jaccard Similarity</strong>: Measures the overlap between two sets. Used in clustering for binary/categorical data, recommendation systems (e.g., movie or product overlap in user baskets), and comparing sets of features.</li>
+<li><strong>Mahalanobis Distance</strong>: Accounts for correlations between features; effective for multivariate data. Used for multivariate outlier detection, classification where feature correlation matters (e.g., fraud detection, anomaly detection in finance), and in Gaussian Mixture Models.</li>
+<li><strong>Earth Mover’s Distance (Wasserstein Distance)</strong>: Quantifies the cost of transforming one distribution into another. Used in image retrieval (comparing histograms), Generative Adversarial Networks (Wasserstein GAN), and comparing probability distributions in high-dimensional data.</li>
+</ul>
+<p>For more, see:</p>
+<ul>
+<li><a href="https://machinelearningmastery.com/distance-measures-for-machine-learning/">A Gentle Introduction to Distance Measures in Machine Learning</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Distance_%28mathematics%29">Wikipedia: Distance Measures</a></li>
+</ul>
+<hr>
+</section>
+<section id="q2-how-is-cosine-similarity-used-in-clip" class="level2">
+<h2 class="anchored" data-anchor-id="q2-how-is-cosine-similarity-used-in-clip">Q2: How is cosine similarity used in CLIP?</h2>
+<p><strong>A:</strong> Cosine similarity is central to the CLIP (Contrastive Language–Image Pretraining) architecture. CLIP uses two encoders (one for images, one for text) and projects both into a shared embedding space. To match images and text, it computes the cosine similarity between their embeddings. The retrieval or matching of image-text pairs during both training and inference relies on this similarity measure: pairs with higher cosine similarity are considered a better semantic match.</p>
+<p>CLIP is trained with a contrastive loss function that encourages the cosine similarity for matching pairs to be high and for mismatched pairs to be low. This enables powerful zero-shot and retrieval capabilities using the shared embedding space.</p>
+<ul>
+<li><a href="https://arxiv.org/abs/2103.00020">OpenAI CLIP Paper</a></li>
+<li><a href="https://amitness.com/2020/06/cosine-similarity/">A Visual Guide to Cosine Similarity and CLIP</a></li>
+</ul>
+<hr>
+</section>
+<section id="q3-how-is-cosine-similarity-used-in-retrieval-for-rag" class="level2">
+<h2 class="anchored" data-anchor-id="q3-how-is-cosine-similarity-used-in-retrieval-for-rag">Q3: How is cosine similarity used in retrieval for RAG?</h2>
+<p><strong>A:</strong> In Retrieval-Augmented Generation (RAG) architectures, cosine similarity plays a key role in connecting user queries with relevant documents or knowledge chunks. When a query is received, both the query and each document (or passage) are embedded into a shared vector space using an encoder such as BERT, Sentence Transformers, or other embedding models. Cosine similarity is then computed between the query embedding and each document embedding to measure their semantic similarity.</p>
+<p>Documents with the highest cosine similarity to the query are selected as the most relevant, and these are then passed on to the generation component (such as an LLM) to compose a final, contextually rich response. This method enables RAG systems to leverage large external knowledge bases efficiently and accurately.</p>
+<ul>
+<li><a href="https://arxiv.org/abs/2005.11401">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (Lewis et al., 2020)</a></li>
+<li><a href="https://huggingface.co/blog/rag">How to Build RAG (Hugging Face Blog)</a></li>
+</ul>
+<hr>
+</section>
+<section id="q4-are-there-any-limitations-of-cosine-similarity" class="level2">
+<h2 class="anchored" data-anchor-id="q4-are-there-any-limitations-of-cosine-similarity">Q4: Are there any limitations of cosine similarity?</h2>
+<p><strong>A:</strong> Yes, cosine similarity ignores the magnitude of vectors. This can be a limitation when the magnitude carries important information. For example, two documents with very different lengths but similar content might have a high cosine similarity, even though their scale (information volume) is very different. In scenarios where magnitude matters—like sensor readings or user engagement volume—cosine similarity might miss critical differences.</p>
+<p>Alternatives include:</p>
+<ul>
+<li><strong>Euclidean Distance</strong> (captures both direction and magnitude)</li>
+<li><strong>Adjusted Cosine Similarity</strong> (used in recommendation systems to account for individual biases)</li>
+<li><strong>Variance-Adjusted Cosine</strong> and <strong>Mahalanobis Distance</strong> (capture more nuanced differences)</li>
+</ul>
+<hr>
+</section>
+<section id="q5-which-distance-measures-are-prevalent-in-modern-ai-models-like-encoders-llms-stable-diffusion-and-videoaudio-models" class="level2">
+<h2 class="anchored" data-anchor-id="q5-which-distance-measures-are-prevalent-in-modern-ai-models-like-encoders-llms-stable-diffusion-and-videoaudio-models">Q5: Which distance measures are prevalent in modern AI models like encoders, LLMs, Stable Diffusion, and video/audio models?</h2>
+<p><strong>A:</strong> Modern AI models employ a variety of distance and similarity measures tailored to their specific architectures and tasks. Here’s an overview:</p>
+<section id="encoders-large-language-models-llms" class="level3">
+<h3 class="anchored" data-anchor-id="encoders-large-language-models-llms">1. <strong>Encoders &amp; Large Language Models (LLMs):</strong></h3>
+<ul>
+<li><strong>Cosine Similarity</strong>: Widely used to measure the similarity between high-dimensional embeddings, especially in tasks like semantic search, information retrieval, and clustering.</li>
+<li><strong>Euclidean Distance</strong>: Employed in certain embedding spaces to gauge the straight-line distance between vectors, useful in clustering and nearest-neighbor algorithms.</li>
+<li><strong>Kullback-Leibler (KL) Divergence</strong>: Utilized in models like Variational Autoencoders (VAEs) to measure the divergence between probability distributions, aiding in regularizing latent spaces.</li>
+</ul>
+</section>
+<section id="stable-diffusion-generative-models" class="level3">
+<h3 class="anchored" data-anchor-id="stable-diffusion-generative-models">2. <strong>Stable Diffusion &amp; Generative Models:</strong></h3>
+<ul>
+<li><strong>Fréchet Inception Distance (FID)</strong>: A standard metric to evaluate the quality of generated images by comparing the distribution of generated images to real images in a feature space. (<a href="https://en.wikipedia.org/wiki/Fr%C3%A9chet_inception_distance">Wikipedia</a>)</li>
+<li><strong>Kernel Inception Distance (KID)</strong>: Similar to FID but uses polynomial kernels, providing an unbiased estimator that’s especially useful with smaller sample sizes.</li>
+<li><strong>Learned Perceptual Image Patch Similarity (LPIPS)</strong>: Measures perceptual similarity between images using deep network features, aligning closely with human judgment.</li>
+<li><strong>Euclidean Distance in Latent Spaces</strong>: Applied within the latent spaces of models like VAEs and diffusion models to measure similarity or interpolate between data points.</li>
+</ul>
+</section>
+<section id="video-audio-models" class="level3">
+<h3 class="anchored" data-anchor-id="video-audio-models">3. <strong>Video &amp; Audio Models:</strong></h3>
+<ul>
+<li><strong>Fréchet Video Distance (FVD)</strong>: An extension of FID for video data, assessing the quality of generated videos by comparing distributions of real and generated video features. (<a href="https://research.google/blog/audio-and-visual-quality-measurement-using-fr%C3%A9chet-distance/">Google Research</a>)</li>
+<li><strong>Fréchet Audio Distance (FAD)</strong>: Analogous to FID, but tailored for audio data, evaluating the quality of generated audio samples. (<a href="https://research.google/blog/audio-and-visual-quality-measurement-using-fr%C3%A9chet-distance/">Google Research</a>)</li>
+<li><strong>Dynamic Time Warping (DTW)</strong>: Commonly used in audio processing to measure similarity between temporal sequences that may vary in speed.</li>
+<li><strong>Cosine Similarity</strong>: Employed in audio and video models to compare feature embeddings, particularly in tasks like speaker recognition or action recognition.</li>
+</ul>
+<p>These distance measures are integral to the functioning and evaluation of modern AI models, ensuring that generated or processed data aligns closely with real-world distributions and human perceptions.</p>
+<hr>
+</section>
+</section>
+<section id="q6-are-all-commonly-used-distance-measures-in-ai-true-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="q6-are-all-commonly-used-distance-measures-in-ai-true-metrics">Q6: Are all commonly used distance measures in AI true metrics?</h2>
+<p><strong>A:</strong> Not all measures termed as “distances” in AI adhere strictly to the mathematical definition of a metric. A true metric must satisfy the following properties:</p>
+<ol type="1">
+<li><strong>Non-negativity</strong>: The distance between any two points is always non-negative.</li>
+<li><strong>Identity of Indiscernibles</strong>: The distance between two points is zero if and only if they are the same point.</li>
+<li><strong>Symmetry</strong>: The distance from point A to B is the same as from B to A.</li>
+<li><strong>Triangle Inequality</strong>: The direct distance from point A to C is less than or equal to the sum of distances from A to B and B to C.</li>
+</ol>
+<p>Let’s examine how some commonly used measures align with these properties:</p>
+<section id="cosine-similarity" class="level3">
+<h3 class="anchored" data-anchor-id="cosine-similarity">1. <strong>Cosine Similarity</strong></h3>
+<ul>
+<li><strong>Nature</strong>: Measures the cosine of the angle between two non-zero vectors.</li>
+<li><strong>Metric Properties</strong>: Not a true metric. It does not satisfy the triangle inequality and lacks the identity of indiscernibles. (<a href="https://en.wikipedia.org/wiki/Cosine_similarity">Wikipedia</a>)</li>
+</ul>
+</section>
+<section id="euclidean-distance" class="level3">
+<h3 class="anchored" data-anchor-id="euclidean-distance">2. <strong>Euclidean Distance</strong></h3>
+<ul>
+<li><strong>Nature</strong>: The straight-line distance between two points in Euclidean space.</li>
+<li><strong>Metric Properties</strong>: A true metric. It satisfies all four properties.</li>
+</ul>
+</section>
+<section id="kullback-leibler-kl-divergence" class="level3">
+<h3 class="anchored" data-anchor-id="kullback-leibler-kl-divergence">3. <strong>Kullback-Leibler (KL) Divergence</strong></h3>
+<ul>
+<li><strong>Nature</strong>: Measures the divergence between two probability distributions.</li>
+<li><strong>Metric Properties</strong>: Not a metric. It’s asymmetric and does not satisfy the triangle inequality. (<a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Wikipedia</a>)</li>
+</ul>
+</section>
+<section id="fréchet-inception-distance-fid" class="level3">
+<h3 class="anchored" data-anchor-id="fréchet-inception-distance-fid">4. <strong>Fréchet Inception Distance (FID)</strong></h3>
+<ul>
+<li><strong>Nature</strong>: Evaluates the quality of images generated by generative models by comparing the distributions of real and generated images in a feature space.</li>
+<li><strong>Metric Properties</strong>: Derived from the Fréchet distance between two multivariate Gaussians. While it satisfies some metric properties, it’s often considered a semi-metric because it may not satisfy the triangle inequality. (<a href="https://arxiv.org/html/2410.05203v2">arxiv.org</a>)</li>
+</ul>
+</section>
+<section id="learned-perceptual-image-patch-similarity-lpips" class="level3">
+<h3 class="anchored" data-anchor-id="learned-perceptual-image-patch-similarity-lpips">5. <strong>Learned Perceptual Image Patch Similarity (LPIPS)</strong></h3>
+<ul>
+<li><strong>Nature</strong>: Measures perceptual similarity between images using deep network features.</li>
+<li><strong>Metric Properties</strong>: Not a true metric. It’s designed to align with human perceptual judgments rather than satisfy mathematical properties.</li>
+</ul>
+</section>
+<section id="fréchet-video-distance-fvd" class="level3">
+<h3 class="anchored" data-anchor-id="fréchet-video-distance-fvd">6. <strong>Fréchet Video Distance (FVD)</strong></h3>
+<ul>
+<li><strong>Nature</strong>: Extends FID to video by evaluating the quality of generated videos.</li>
+<li><strong>Metric Properties</strong>: Similar to FID, it’s based on the Fréchet distance but may not satisfy all metric properties.</li>
+</ul>
+</section>
+<section id="fréchet-audio-distance-fad" class="level3">
+<h3 class="anchored" data-anchor-id="fréchet-audio-distance-fad">7. <strong>Fréchet Audio Distance (FAD)</strong></h3>
+<ul>
+<li><strong>Nature</strong>: Adapts FID to the audio domain to evaluate the quality of generated audio.</li>
+<li><strong>Metric Properties</strong>: Like FID and FVD, it’s based on the Fréchet distance and may not satisfy all metric properties.</li>
+</ul>
+</section>
+<section id="dynamic-time-warping-dtw" class="level3">
+<h3 class="anchored" data-anchor-id="dynamic-time-warping-dtw">8. <strong>Dynamic Time Warping (DTW)</strong></h3>
+<ul>
+<li><strong>Nature</strong>: Measures similarity between two temporal sequences that may vary in speed.</li>
+<li><strong>Metric Properties</strong>: Not a true metric. It doesn’t satisfy the triangle inequality.</li>
+</ul>
+<p><strong>Conclusion:</strong> While many of these measures are termed “distances,” they don’t all conform to the strict mathematical definition of a metric. Their utility often lies in their ability to capture perceptual or task-specific similarities rather than adhering to formal metric properties.</p>
 
 
+</section>
+</section>
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="ZGlzdGFuY2UtbWVhc3VyZXMlMkNjb3NpbmUtc2ltaWxhcml0eQ==" data-listing-date-sort="1748543400000" data-listing-file-modified-sort="1748619241193" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1424">
-<div class="thumbnail"><a href="./posts/distance-similarity-modern-ml/index.html" class="no-external">
-
-<img loading="lazy" src="./posts/distance-similarity-modern-ml/distance-measure.png" class="thumbnail-image">
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/distance-similarity-modern-ml/index.html" class="no-external">Distance and Similarity in Modern Machine Learning</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('ZGlzdGFuY2UtbWVhc3VyZXM='); return false;">distance-measures</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Y29zaW5lLXNpbWlsYXJpdHk='); return false;">cosine-similarity</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/distance-similarity-modern-ml/index.html" class="no-external">
-<strong>A:</strong>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/distance-similarity-modern-ml/index.html" class="no-external">
-<div class="listing-date">
-May 30, 2025
-</div>
-<div class="listing-author">
-Sayan Banerjee
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="ZWZmaWNpZW50LXRyYW5zZm9ybWVycyUyQ3RyYWluaW5nLW9wdGltaXphdGlvbg==" data-listing-date-sort="1747938600000" data-listing-file-modified-sort="1748017401971" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1148">
-<div class="thumbnail"><a href="./posts/unpadding-sequence_packing/index.html" class="no-external">
-
-<img loading="lazy" src="./posts/unpadding-sequence_packing/modernbert_unpadding.png" class="thumbnail-image">
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/unpadding-sequence_packing/index.html" class="no-external">How does unpadding differ from sequence packing?</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('ZWZmaWNpZW50LXRyYW5zZm9ybWVycw=='); return false;">efficient-transformers</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('dHJhaW5pbmctb3B0aW1pemF0aW9u'); return false;">training-optimization</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/unpadding-sequence_packing/index.html" class="no-external">
-Recently, while reading the ModernBERT blog on Hugging Face, I came across several training optimizations designed to make transformer models faster and more…<strong></strong><strong></strong>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/unpadding-sequence_packing/index.html" class="no-external">
-<div class="listing-date">
-May 23, 2025
-</div>
-<div class="listing-author">
-Sayan Banerjee
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
